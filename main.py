@@ -2,17 +2,20 @@
 import test_dataset_array
 from BSRM import basic_stable_roommate_matching
 import random
+from preference_util import *
 from datetime import datetime
 
 
-def random_complete_test_data(data_size=200):
+def random_complete_test_data(data_size=200, start_with=1):
 
     test_data = []
 
-    for i in range(1, data_size + 1):
+    min_index = start_with
+    max_index = data_size + start_with - 1
+
+    for i in range(min_index, max_index + 1):
         tmp = []
-        size_j = data_size + 1
-        for j in range(1, size_j):
+        for j in range(min_index, max_index + 1):
             if i != j:
                 tmp.append(j)
 
@@ -22,23 +25,52 @@ def random_complete_test_data(data_size=200):
     return test_data
 
 
-def batch_test(count=200, data_size=200):
+def random_incomplete_test_data(data_size=200, start_with=1):
+
+    complete_data = random_complete_test_data(data_size)
+
+    delete_pair_num = random.randint(1, int((data_size * (data_size - 1)) / 2))
+
+    for i in range(delete_pair_num):
+
+        index_delete_i = random.randint(0, data_size - 1)
+
+        while len(complete_data[index_delete_i]) == 0:
+            index_delete_i = (index_delete_i + 1) % data_size
+
+        # 在j的list里面有的叫actual
+        actual_delete_i = index_delete_i + start_with
+
+        index_delete_j = len(complete_data[index_delete_i])
+
+        del complete_data[index_delete_i][index_delete_j]
+
+        index_delete_i = find_target_in_row(complete_data, index_delete_j, actual_delete_i)
+
+        del complete_data[index_delete_j][index_delete_i]
+
+
+def batch_test(count=200, data_size=200, start_with=1, debug=True):
 
     count_list = [0 for i in range(5)]
 
     for round in range(count):
 
-        test_data = random_complete_test_data(data_size)
+        test_data = random_complete_test_data(data_size, start_with)
 
         print(round)
-        print("preferences", test_data)
-        type, msg, result = basic_stable_roommate_matching(test_data)
-        count_list[type] = count_list[type] + 1
-        print(msg, result)
-        print()
+        if debug:
+            print("preferences", test_data)
 
-        if msg == "bug":
-            break
+        type, msg, result = basic_stable_roommate_matching(test_data, start_with)
+        count_list[type] = count_list[type] + 1
+
+        if debug:
+            print(msg, result)
+            print()
+
+        # if msg == "bug":
+        #     break
 
     summary = {'bug': count_list[0],
                'after phase_1 find answer': count_list[1],
@@ -50,11 +82,11 @@ def batch_test(count=200, data_size=200):
 
 if __name__ == '__main__':
 
-
-    batch_test(count=200, data_size=5)
+    # TODO: incomplete list
+    batch_test(count=200, data_size=10, start_with=1, debug=True)
     # batch_test(1, 5)
 
-    # test_data = test_dataset_array.test_match_5
+    # test_data = test_dataset_array.test_match_6
     #
     # type, msg, result = basic_stable_roommate_matching(test_data)
     #

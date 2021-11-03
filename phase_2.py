@@ -65,9 +65,10 @@ def get_ht_graph(preferences):
             for j in range(len(preferences)):
                 if i == j:
                     continue
-                first_preference = preferences[j][0]
-                if second_preference == first_preference:
-                    ht_graph[i].append(j)
+                if len(preferences[j]) > 0:
+                    first_preference = preferences[j][0]
+                    if second_preference == first_preference:
+                        ht_graph[i].append(j)
 
     return ht_graph
 
@@ -110,10 +111,12 @@ def choose_rotation(rotation_list):
 
 
 def phase_2(preferences):
+    bug_flag = False
     while is_case_3(preferences):
         rotation_list = find_rotation_list(preferences)
 
         if len(rotation_list) > 0:
+            bug_flag = False
             chosen_rotation_index = choose_rotation(rotation_list)
             rotation = rotation_list[chosen_rotation_index]
 
@@ -121,7 +124,13 @@ def phase_2(preferences):
 
             preferences = phase_1.phase_1(preferences)
         else:
-            return 0, "bug", preferences
+            if not bug_flag:
+                # 防止[[3], [2, 7], [4, 1], [0], [2], [9], [], [1], [], [5]] 这种情况
+                preferences = phase_1.phase_1(preferences)
+                bug_flag = True
+                continue
+            else:
+                return 0, "bug", preferences
     if is_case_2(preferences):
         return 3, "after phase_2 find answer", preferences
     elif is_case_4(preferences):

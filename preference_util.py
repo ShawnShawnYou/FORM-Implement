@@ -1,9 +1,9 @@
 """
 • Case1: has empty.
 • Case2: all one.
-• Case3: Some more than one.
+• Case3: Some more than one. not (<= 1)
 
-• my case 4: all empty or one and not have duplicated like {[0], [1], [0]}
+• my case 4: all <= 1 and not have duplicated like {[0], [1], [0]}
 """
 
 
@@ -26,7 +26,12 @@ def is_case_2(preferences):
 
 
 def is_case_3(preferences):
-    return (not is_case_1(preferences)) and (not is_case_2(preferences))
+    ret = False
+    for i in preferences:
+        if len(i) > 1:
+            ret = True
+            break
+    return ret
 
 
 def is_case_4(preferences):
@@ -80,4 +85,16 @@ def refresh_preferences_alone_pair(preferences):
                     flag = True
                     break
     return preferences
+
+
+def add_dummy_node(preferences, start_with=1):
+    dummy_i = len(preferences) + start_with
+
+
+def eliminate_single(preferences):
+    for i in range(len(preferences)):
+        if len(preferences[i]) == 0:
+            preferences[i] = [i]
+    return preferences
+
 
