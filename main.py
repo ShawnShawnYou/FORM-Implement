@@ -27,7 +27,7 @@ def random_complete_test_data(data_size=200, start_with=1):
 
 def random_incomplete_test_data(data_size=200, start_with=1):
 
-    complete_data = random_complete_test_data(data_size)
+    test_data = random_complete_test_data(data_size)
 
     delete_pair_num = random.randint(1, int((data_size * (data_size - 1)) / 2))
 
@@ -35,20 +35,21 @@ def random_incomplete_test_data(data_size=200, start_with=1):
 
         index_delete_i = random.randint(0, data_size - 1)
 
-        while len(complete_data[index_delete_i]) == 0:
+        while len(test_data[index_delete_i]) == 0:
             index_delete_i = (index_delete_i + 1) % data_size
 
         # 在j的list里面有的叫actual
         actual_delete_i = index_delete_i + start_with
 
-        index_delete_j = len(complete_data[index_delete_i])
+        index_delete_j = test_data[index_delete_i][len(test_data[index_delete_i]) - 1] - start_with
 
-        del complete_data[index_delete_i][index_delete_j]
+        del test_data[index_delete_i][len(test_data[index_delete_i]) - 1]
 
-        index_delete_i = find_target_in_row(complete_data, index_delete_j, actual_delete_i)
+        index_delete_i = find_target_in_row(test_data, index_delete_j, actual_delete_i)
 
-        del complete_data[index_delete_j][index_delete_i]
+        del test_data[index_delete_j][index_delete_i]
 
+    return test_data
 
 def batch_test(count=200, data_size=200, start_with=1, debug=True):
 
@@ -56,7 +57,7 @@ def batch_test(count=200, data_size=200, start_with=1, debug=True):
 
     for round in range(count):
 
-        test_data = random_complete_test_data(data_size, start_with)
+        test_data = random_incomplete_test_data(data_size, start_with)
 
         print(round)
         if debug:
@@ -83,7 +84,7 @@ def batch_test(count=200, data_size=200, start_with=1, debug=True):
 if __name__ == '__main__':
 
     # TODO: incomplete list
-    batch_test(count=200, data_size=10, start_with=1, debug=True)
+    batch_test(count=1, data_size=5, start_with=1, debug=True)
     # batch_test(1, 5)
 
     # test_data = test_dataset_array.test_match_6
