@@ -4,6 +4,7 @@ from BSRM import basic_stable_roommate_matching
 import random
 from preference_util import *
 from datetime import datetime
+import time
 
 
 def random_complete_test_data(data_size=200, start_with=1):
@@ -51,19 +52,25 @@ def random_incomplete_test_data(data_size=200, start_with=1):
 
     return test_data
 
+
 def batch_test(count=200, data_size=200, start_with=1, debug=True):
 
     count_list = [0 for i in range(5)]
+    empty = 0
 
     for round in range(count):
 
         test_data = random_incomplete_test_data(data_size, start_with)
 
-        print(round)
+        # print(round)
         if debug:
             print("preferences", test_data)
 
         type, msg, result = basic_stable_roommate_matching(test_data, start_with)
+        for i in result:
+            if len(i) == 0:
+                empty = empty + 1
+
         count_list[type] = count_list[type] + 1
 
         if debug:
@@ -73,7 +80,8 @@ def batch_test(count=200, data_size=200, start_with=1, debug=True):
         # if msg == "bug":
         #     break
 
-    summary = {'bug': count_list[0],
+    summary = {'avg empty': empty / 200.0,
+               'bug': count_list[0],
                'after phase_1 find answer': count_list[1],
                'unsolvable by phase_1': count_list[2],
                'after phase_2 find answer': count_list[3],
@@ -83,11 +91,14 @@ def batch_test(count=200, data_size=200, start_with=1, debug=True):
 
 if __name__ == '__main__':
 
-    # TODO: incomplete list
-    batch_test(count=1, data_size=5, start_with=1, debug=True)
-    # batch_test(1, 5)
+    start = time.time()
+    batch_test(count=200, data_size=100, start_with=1, debug=False)
+    end = time.time()
+    print("运行时间:%.2f秒" % (end - start))
+    # output:循环运行时间:5.50秒
 
-    # test_data = test_dataset_array.test_match_6
+
+    # test_data = test_dataset_array.test_match_7
     #
     # type, msg, result = basic_stable_roommate_matching(test_data)
     #

@@ -30,8 +30,8 @@ def basic_stable_roommate_matching(preferences_array, start_with=1):
     if is_case_2(phase_1_reduced_preferences):
         return 1, "after phase_1 find answer", phase_1_reduced_preferences
 
-    if is_case_4(phase_1_reduced_preferences):
-        return 1, "after phase_1 find answer", phase_1_reduced_preferences
+    # if is_case_4(phase_1_reduced_preferences):
+    #     return 1, "after phase_1 find answer", phase_1_reduced_preferences
 
     # if is_case_1(phase_1_reduced_preferences):
     #     return 2, "unsolvable by phase_1", phase_1_reduced_preferences

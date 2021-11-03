@@ -48,9 +48,12 @@ def phase_1(preferences):
 
     check_set = set(i for i in range(len(preferences)))
 
-    while len(check_set) > 0 and not is_case_1(preferences):
+    while len(check_set) > 0:
 
         now_check = check_set.pop()
+
+        if len(preferences[now_check]) == 0:
+            continue
 
         first = preferences[now_check][0]
 
