@@ -29,7 +29,4 @@
 #
 # print(algorithm())
 
-a = set([1, 2])
-b = set([2, 1])
-
-print(len(a - b))
+print(len(set()))

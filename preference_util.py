@@ -98,3 +98,9 @@ def eliminate_single(preferences):
     return preferences
 
 
+def transfer_preferences_start_with_1(preferences):
+    for i in preferences:
+        for j in range(len(i)):
+            i[j] = i[j] - 1
+
+    return preferences

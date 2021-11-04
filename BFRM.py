@@ -4,14 +4,7 @@ import phase_2
 from preference_util import *
 
 from copy import deepcopy
-
-
-def transfer_preferences_start_with_1(preferences):
-    for i in preferences:
-        for j in range(len(i)):
-            i[j] = i[j] - 1
-
-    return preferences
+from algorithm_config import *
 
 
 def basic_stable_roommate_matching(preferences_array, start_with=1):
@@ -23,8 +16,11 @@ def basic_stable_roommate_matching(preferences_array, start_with=1):
     original_preferences = deepcopy(preferences_array)
 
     phase_1_reduced_preferences = phase_1.phase_1(preferences_array)
-    #
-    # phase_1_reduced_preferences = eliminate_single(phase_1_reduced_preferences)
+
+    if len(phase_1_reduced_preferences) % 2 == 1 and not is_case_1(phase_1_reduced_preferences):
+        return 2, "unsolvable by phase_1", phase_1_reduced_preferences
+
+    phase_1_reduced_preferences = eliminate_single(phase_1_reduced_preferences)
 
     # 直接跳过phase_1是不行的 因为有末尾的约束 所以phase2的一定找得到rotation的定理才有效
     if is_case_2(phase_1_reduced_preferences):
@@ -36,6 +32,6 @@ def basic_stable_roommate_matching(preferences_array, start_with=1):
     # if is_case_1(phase_1_reduced_preferences):
     #     return 2, "unsolvable by phase_1", phase_1_reduced_preferences
 
-    phase_2_reduced_preferences = phase_2.phase_2(phase_1_reduced_preferences)
+    phase_2_reduced_preferences = phase_2.phase_2(phase_1_reduced_preferences, original_preferences)
 
     return phase_2_reduced_preferences

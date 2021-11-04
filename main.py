@@ -1,10 +1,11 @@
 
 import test_dataset_array
-from BSRM import basic_stable_roommate_matching
+from BFRM import basic_stable_roommate_matching
 import random
 from preference_util import *
 from datetime import datetime
 import time
+from tqdm import tqdm
 
 
 def random_complete_test_data(data_size=200, start_with=1):
@@ -58,11 +59,10 @@ def batch_test(count=200, data_size=200, start_with=1, debug=True):
     count_list = [0 for i in range(5)]
     empty = 0
 
-    for round in range(count):
+    for round in tqdm(range(count)):
 
         test_data = random_incomplete_test_data(data_size, start_with)
 
-        # print(round)
         if debug:
             print("preferences", test_data)
 
@@ -92,7 +92,7 @@ def batch_test(count=200, data_size=200, start_with=1, debug=True):
 if __name__ == '__main__':
 
     start = time.time()
-    batch_test(count=200, data_size=100, start_with=1, debug=False)
+    batch_test(count=800, data_size=200, start_with=1, debug=False)
     end = time.time()
     print("运行时间:%.2f秒" % (end - start))
     # output:循环运行时间:5.50秒
