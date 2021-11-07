@@ -17,6 +17,8 @@ def is_case_1(preferences):
 
 
 def is_case_2(preferences):
+    if is_case_1(preferences):
+        return False
     ret = True
     for i in preferences:
         if len(i) != 1:
@@ -26,6 +28,8 @@ def is_case_2(preferences):
 
 
 def is_case_3(preferences):
+    if is_case_1(preferences):
+        return False
     ret = False
     for i in preferences:
         if len(i) > 1:

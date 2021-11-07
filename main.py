@@ -31,7 +31,10 @@ def random_incomplete_test_data(data_size=200, start_with=1):
 
     test_data = random_complete_test_data(data_size)
 
-    delete_pair_num = random.randint(1, int((data_size * (data_size - 1)) / 2))
+    min_threshold = 0.7
+    min_delete = 1
+    min_delete = int((data_size * (data_size - 1)) * min_threshold / 2)
+    delete_pair_num = random.randint(min_delete, int((data_size * (data_size - 1)) / 2))
 
     for i in range(delete_pair_num):
 
@@ -58,10 +61,17 @@ def batch_test(count=200, data_size=200, start_with=1, debug=True):
 
     count_list = [0 for i in range(5)]
     empty = 0
+    avg_count_len = 0
 
     for round in tqdm(range(count)):
 
         test_data = random_incomplete_test_data(data_size, start_with)
+
+        count_len = 0
+        for i in range(len(test_data)):
+            count_len = count_len + len(test_data[i])
+        count_len = count_len / len(test_data)
+        avg_count_len = avg_count_len + count_len
 
         if debug:
             print("preferences", test_data)
@@ -80,7 +90,8 @@ def batch_test(count=200, data_size=200, start_with=1, debug=True):
         # if msg == "bug":
         #     break
 
-    summary = {'avg empty': empty / 200.0,
+    summary = {'avg_count_len': avg_count_len / count,
+               'avg empty': empty / count,
                'bug': count_list[0],
                'after phase_1 find answer': count_list[1],
                'unsolvable by phase_1': count_list[2],
@@ -92,7 +103,7 @@ def batch_test(count=200, data_size=200, start_with=1, debug=True):
 if __name__ == '__main__':
 
     start = time.time()
-    batch_test(count=800, data_size=200, start_with=1, debug=False)
+    batch_test(count=200, data_size=200, start_with=1, debug=False)
     end = time.time()
     print("运行时间:%.2f秒" % (end - start))
     # output:循环运行时间:5.50秒
