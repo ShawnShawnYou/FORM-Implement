@@ -94,6 +94,30 @@ def choose_max_regret(preferences, original_preferences, last_candidate):
     return last_one
 
 
+def is_big_cycle(preferences, rotation):
+    list_all_set = set()
+    list_2_set = set()
+    for i in rotation:
+        list_i = preferences[i]
+        for j in range(len(list_i)):
+            if j <= 1:
+                list_2_set.add(list_i[j])
+            list_all_set.add(list_i[j])
+
+    if len(list_all_set - list_2_set) == 0:
+        return True
+    else:
+        return False
+
+
+def filter_rotation_list(preferences, rotation_list):
+    rotation_candidate = []
+    for rotation in rotation_list:
+        if len(rotation) % 2 == 0 or not is_big_cycle(preferences, rotation):
+            rotation_candidate.append(rotation)
+    return rotation_candidate
+
+
 def find_rotation_list(preferences, original_preferences):
     # 用集合去除重复路径
     rotation_set = set()
@@ -126,32 +150,55 @@ def find_rotation_list(preferences, original_preferences):
     return rotation_list
 
 
-def get_rotation_value(rotation):
-    # 这里要改
-    ret = len(rotation)
-    return ret
+def get_rotation_value(rotation, preferences,
+                       original_preferences, original_individual_cost_saving):
+    y_set = [preferences[i][0] for i in rotation]
+
+    value = 0
+    for i in range(len(rotation)):
+        x_i = rotation[i]
+
+        y_i_plus_1 = y_set[(i + 1) % len(y_set)]
+        position_1 = find_target_in_row(original_preferences, x_i, y_i_plus_1)
+        u_1 = -1 * original_individual_cost_saving[x_i][position_1]
+
+        y_i = y_set[i]
+        position_2 = find_target_in_row(original_preferences, x_i, y_i)
+        u_2 = -1 * original_individual_cost_saving[x_i][position_2]
+
+        value = value + (u_1 - u_2)
+
+    return value
 
 
-def choose_rotation(rotation_list):
+def choose_rotation(rotation_list, preferences,
+                    original_preferences, original_individual_cost_saving):
     if config['strategy'] == 3:
-        max_index = 0
+        min_index = 0
         for i in range(1, len(rotation_list)):
-            if get_rotation_value(rotation_list[max_index]) < \
-                    get_rotation_value(rotation_list[i]):
-                max_index = i
-        return max_index
+            value_min = get_rotation_value(rotation_list[min_index], preferences,
+                                           original_preferences, original_individual_cost_saving)
+
+            value_i = get_rotation_value(rotation_list[i], preferences,
+                                         original_preferences, original_individual_cost_saving)
+
+            if min_index > value_i:
+                min_index = i
+        return min_index
     else:
         return random.randint(0, len(rotation_list) - 1)
 
 
-def phase_2(preferences, original_preferences):
+def phase_2(preferences, original_preferences, original_individual_cost_saving):
     bug_flag = False
     while is_case_3(preferences):
         rotation_list = find_rotation_list(preferences, original_preferences)
+        rotation_list = filter_rotation_list(preferences, rotation_list)
 
         if len(rotation_list) > 0:
             bug_flag = False
-            chosen_rotation_index = choose_rotation(rotation_list)
+            chosen_rotation_index = choose_rotation(rotation_list, preferences,
+                                                    original_preferences, original_individual_cost_saving)
             rotation = rotation_list[chosen_rotation_index]
 
             preferences = eliminate_rotation(preferences, rotation)

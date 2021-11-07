@@ -7,7 +7,7 @@ from copy import deepcopy
 from algorithm_config import *
 
 
-def basic_stable_roommate_matching(preferences_array, start_with=1):
+def basic_stable_roommate_matching(preferences_array, original_individual_cost_saving, start_with=1):
 
     if start_with == 1:
         preferences_array = transfer_preferences_start_with_1(preferences_array)
@@ -32,6 +32,7 @@ def basic_stable_roommate_matching(preferences_array, start_with=1):
     # if is_case_1(phase_1_reduced_preferences):
     #     return 2, "unsolvable by phase_1", phase_1_reduced_preferences
 
-    phase_2_reduced_preferences = phase_2.phase_2(phase_1_reduced_preferences, original_preferences)
+    phase_2_reduced_preferences = phase_2.phase_2(phase_1_reduced_preferences,
+                                                  original_preferences, original_individual_cost_saving)
 
     return phase_2_reduced_preferences
