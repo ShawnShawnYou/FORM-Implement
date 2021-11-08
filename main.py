@@ -63,7 +63,7 @@ def batch_test(count=200, data_size=200, start_with=1, debug=True):
     empty = 0
     avg_count_len = 0
 
-    for round in tqdm(range(count)):
+    for round in range(count):
 
         test_data = random_incomplete_test_data(data_size, start_with)
 
@@ -77,11 +77,29 @@ def batch_test(count=200, data_size=200, start_with=1, debug=True):
             print("preferences", test_data)
 
         type, msg, result = basic_stable_roommate_matching(test_data, start_with)
-        for i in result:
-            if len(i) == 0:
-                empty = empty + 1
-
         count_list[type] = count_list[type] + 1
+
+        measurement = {
+            'single_dog': 0,
+            'has_partner': 0,
+            'wrong_match': 0,
+            'long_list': 0
+        }
+
+        for i in range(len(result)):
+            if len(result[i]) == 1:
+                if result[i][0] == i:
+                    measurement['single_dog'] = measurement['single_dog'] + 1
+                else:
+                    partner = result[i][0]
+                    if result[partner][0] == i:
+                        measurement['has_partner'] = measurement['has_partner'] + 1
+                    else:
+                        measurement['wrong_match'] = measurement['wrong_match'] + 1
+            else:
+                measurement['long_list'] = measurement['long_list'] + 1
+        print(measurement)
+
 
         if debug:
             print(msg, result)
@@ -103,7 +121,7 @@ def batch_test(count=200, data_size=200, start_with=1, debug=True):
 if __name__ == '__main__':
 
     start = time.time()
-    batch_test(count=200, data_size=200, start_with=1, debug=False)
+    batch_test(count=20, data_size=200, start_with=1, debug=False)
     end = time.time()
     print("运行时间:%.2f秒" % (end - start))
     # output:循环运行时间:5.50秒

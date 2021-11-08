@@ -6,7 +6,7 @@ strategy_map = {
 }
 
 config = {
-    'strategy': 3
+    'strategy': 2
 }
 
 
