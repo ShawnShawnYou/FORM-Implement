@@ -8,7 +8,7 @@ def greedy_roommate_matching(preferences, overall_sorted_list, start_with=1):
 
     check_set = set([i for i in range(len(preferences))])
 
-    for to_be_delete in range(overall_sorted_list):
+    for to_be_delete in overall_sorted_list:
 
         p1 = to_be_delete.id - start_with
         p2 = to_be_delete.match_id - start_with

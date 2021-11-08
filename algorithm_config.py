@@ -8,3 +8,7 @@ strategy_map = {
 config = {
     'strategy': 3
 }
+
+
+def set_config(key, value):
+    config[key] = value
