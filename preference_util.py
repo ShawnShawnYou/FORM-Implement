@@ -108,3 +108,33 @@ def transfer_preferences_start_with_1(preferences):
             i[j] = i[j] - 1
 
     return preferences
+
+
+def verify_match(match, skip_bug):
+    # 验证匹配无误（不验证block pair，只验证是不是有bug）
+    verification_result = {
+        'single_dog': 0,
+        'has_partner': 0,
+        'wrong_match': 0,
+        'long_list': 0,
+    }
+
+    for i in range(len(match)):
+        if len(match[i]) == 1:
+            if match[i][0] == i:
+                verification_result['single_dog'] = verification_result['single_dog'] + 1
+            else:
+                partner = match[i][0]
+                if match[partner][0] == i:
+                    verification_result['has_partner'] = verification_result['has_partner'] + 1
+                else:
+                    verification_result['wrong_match'] = verification_result['wrong_match'] + 1
+                    if skip_bug:
+                        match[i] = [i]
+
+        else:
+            verification_result['long_list'] = verification_result['long_list'] + 1
+            if skip_bug:
+                match[i] = [i]
+
+    return match, verification_result
