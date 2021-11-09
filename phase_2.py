@@ -182,7 +182,7 @@ def choose_rotation(rotation_list, preferences,
             value_i = get_rotation_value(rotation_list[i], preferences,
                                          original_preferences, original_individual_cost_saving)
 
-            if min_index > value_i:
+            if value_min > value_i:
                 min_index = i
         return min_index
     else:
