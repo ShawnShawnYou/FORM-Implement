@@ -94,6 +94,30 @@ def choose_max_regret(preferences, original_preferences, last_candidate):
     return last_one
 
 
+def choose_min_value(preferences, original_preferences, original_individual_cost_saving,
+                     last_candidate):
+    min_value_index = 0
+    min_value_partner = 0
+    min_value = 9999
+
+    tmp_last_candidate = deepcopy(last_candidate)
+    for i in range(len(tmp_last_candidate)):
+        last_partner = tmp_last_candidate.pop()
+        last_one = preferences[last_partner][-1]
+        if last_partner == last_one:
+            continue
+
+        i_in_last_one_index = find_target_in_row(original_preferences, last_one, last_partner)
+        value_last_one = original_individual_cost_saving[last_one][i_in_last_one_index]
+
+        if value_last_one < min_value:
+            min_value = value_last_one
+            min_value_index = last_one
+            min_value_partner = last_partner
+
+    return min_value_index, min_value_partner
+
+
 def is_big_cycle(preferences, rotation):
     list_all_set = set()
     list_2_set = set()
@@ -118,20 +142,27 @@ def filter_rotation_list(preferences, rotation_list):
     return rotation_candidate
 
 
-def find_rotation_list(preferences, original_preferences):
+def find_rotation_list(preferences, original_preferences, original_individual_cost_saving):
     # 用集合去除重复路径
     rotation_set = set()
 
     ht_graph = get_ht_graph(preferences)
 
     if config['strategy'] == 2:
-        last_candidate = set([i for i in range(len(ht_graph))])
+        tmp_list = []
+        for i in range(len(ht_graph)):
+            if ht_graph[i] != []:
+                tmp_list.append(i)
+
+        last_candidate = set(tmp_list)
 
         while len(rotation_set) == 0 and len(last_candidate) > 0:
-            last_one = choose_max_regret(preferences, original_preferences, last_candidate)
+            # last_one = choose_max_regret(preferences, original_preferences, last_candidate)
+            last_one, last_one_partner = choose_min_value(preferences, original_preferences, original_individual_cost_saving,
+                                        last_candidate)
             to_visit = set([i for i in range(len(ht_graph))])
             dfs(rotation_set, ht_graph, [], last_one, to_visit)
-            last_candidate.remove(last_one)
+            last_candidate.remove(last_one_partner)
     else:
         # 考虑如果是图中有多个连通分支
         to_visit = set([i for i in range(len(ht_graph))])
@@ -192,8 +223,9 @@ def choose_rotation(rotation_list, preferences,
 def phase_2(preferences, original_preferences, original_individual_cost_saving):
     bug_flag = False
     while is_case_3(preferences):
-        rotation_list = find_rotation_list(preferences, original_preferences)
-        rotation_list = filter_rotation_list(preferences, rotation_list)
+        rotation_list = find_rotation_list(preferences,
+                                           original_preferences, original_individual_cost_saving)
+        # rotation_list = filter_rotation_list(preferences, rotation_list)
 
         if len(rotation_list) > 0:
             bug_flag = False
