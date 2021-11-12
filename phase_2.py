@@ -156,12 +156,23 @@ def find_rotation_list(preferences, original_preferences, original_individual_co
 
         last_candidate = set(tmp_list)
 
-        while len(rotation_set) == 0 and len(last_candidate) > 0:
+        while len(last_candidate) > 0:
             # last_one = choose_max_regret(preferences, original_preferences, last_candidate)
             last_one, last_one_partner = choose_min_value(preferences, original_preferences, original_individual_cost_saving,
                                         last_candidate)
             to_visit = set([i for i in range(len(ht_graph))])
             dfs(rotation_set, ht_graph, [], last_one, to_visit)
+            if len(rotation_set) > 0:
+                if config['is_big_cycle_filter']:
+                    # 如果要跳过大环，则一直要找到一个非奇数大环才返回，否则可以直接返回
+                    for i in rotation_set:
+                        # 字符串转rotation
+                        rotation = i.split(" ")
+                        rotation = [int(j) for j in rotation]
+                        if not is_big_cycle(preferences, rotation):
+                            break
+                else:
+                    break
             last_candidate.remove(last_one_partner)
     else:
         # 考虑如果是图中有多个连通分支
@@ -225,7 +236,8 @@ def phase_2(preferences, original_preferences, original_individual_cost_saving):
     while is_case_3(preferences):
         rotation_list = find_rotation_list(preferences,
                                            original_preferences, original_individual_cost_saving)
-        # rotation_list = filter_rotation_list(preferences, rotation_list)
+        if config['is_big_cycle_filter']:
+            rotation_list = filter_rotation_list(preferences, rotation_list)
 
         if len(rotation_list) > 0:
             bug_flag = False
