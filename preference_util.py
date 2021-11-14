@@ -138,3 +138,51 @@ def verify_match(match, skip_bug):
                 match[i] = [i]
 
     return match, verification_result
+
+
+def fairness_compute(original_preference, match, start_with=1):
+
+    if start_with == 1:
+        transfer_preferences_start_with_1(original_preference)
+
+    unfair_count = 0
+    none_count = 0
+
+    for i in range(len(match)):
+        if match[i] is None:
+            none_count += 1
+            continue
+
+        partner = match[i][0]
+
+        if i == partner:
+            continue
+
+        index_partner = find_target_in_row(original_preference, i, partner)
+        if index_partner is None:
+            continue
+
+        # 考察i的list里面比当前的partner好的那些
+        for j in range(0, index_partner):
+            # 第一个倒霉蛋
+            to_be_block_i = original_preference[i][j]
+
+            # 第一个倒霉蛋现在的配偶
+            if match[to_be_block_i] is None:
+                continue
+            to_be_block_i_partner = match[to_be_block_i][0]
+
+            # 第一个倒霉蛋现在的配偶的位置（如果是他自己就排在最后）
+            to_be_block_i_partner_index = find_target_in_row(original_preference, to_be_block_i, to_be_block_i_partner)
+            if to_be_block_i_partner_index is None:
+                to_be_block_i_partner_index = len(original_preference[to_be_block_i_partner])
+
+            # 当前i在第一个倒霉蛋心目的位置
+            i_index = find_target_in_row(original_preference, to_be_block_i, i)
+
+            if i_index < to_be_block_i_partner_index:
+                # 他俩可以私奔
+                unfair_count += 1
+                break
+
+    return unfair_count, none_count
